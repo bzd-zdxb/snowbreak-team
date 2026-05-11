@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -117,6 +117,7 @@
         <button class="btn primary" id="btnGenerate">生成推荐配队</button>
         <button class="btn secondary" id="btnSelectAll">全选</button>
         <button class="btn secondary" id="btnClear">清空选择</button>
+        <input id="roleSearch" type="text" placeholder="搜索角色（支持模糊）" style="height:34px;border:1px solid var(--border);border-radius:8px;padding:0 10px;min-width:220px;background:#fff;color:var(--text);" />
         <label class="check"><input type="checkbox" id="allowRepeat" checked /> 允许角色重复出现</label>
         <label class="check"><input type="checkbox" id="survivalPriority" /> 考虑生存优先</label>
         <label class="check"><input type="checkbox" id="showDetail" checked /> 显示配队详细信息</label>
@@ -148,6 +149,7 @@
       selected: new Set(),
       forcedOutputs: new Set(),
       teamLineRowIndexes: [],
+      searchKeyword: '',
     };
 
     const TOP_N = 5;
@@ -499,7 +501,12 @@
     function renderRoles() {
       const grid = document.getElementById('roleGrid');
       grid.innerHTML = '';
-      for (const role of state.roles) {
+      const kw = state.searchKeyword.trim().toLowerCase();
+      const filtered = !kw
+        ? state.roles
+        : state.roles.filter(r => String(r.name || '').toLowerCase().includes(kw));
+
+      for (const role of filtered) {
         const card = document.createElement('div');
         card.className = 'role-card';
         if (state.selected.has(role.name)) card.classList.add('selected');
@@ -562,6 +569,11 @@
         renderRoles();
         renderResult('已清空选择。');
         supplementBox.textContent = '补角色建议会显示在这里...';
+      });
+
+      document.getElementById('roleSearch').addEventListener('input', (e) => {
+        state.searchKeyword = e.target.value || '';
+        renderRoles();
       });
     }
 
