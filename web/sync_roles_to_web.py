@@ -15,7 +15,7 @@ for p in ROLES_DIR.iterdir():
     if p.is_file() and p.suffix.lower() in img_exts:
         target = WEB_ROLES_DIR / p.name
         target.write_bytes(p.read_bytes())
-        img_map[p.stem] = f"./roles/{p.name}"
+        img_map[p.stem] = f"../roles/{p.name}"
 
 xlsx_path = ROLES_DIR / "roles.xlsx"
 wb = load_workbook(xlsx_path, data_only=True)
