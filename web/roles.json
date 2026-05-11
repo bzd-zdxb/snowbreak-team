@@ -6,7 +6,7 @@
   "roles": [
     {
       "name": "伊切尔-豹豹",
-      "image": "./roles/伊切尔-豹豹.png",
+      "image": "../roles/伊切尔-豹豹.png",
       "position": "辅助",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -17,7 +17,7 @@
     },
     {
       "name": "克罗瑞娜-绯月",
-      "image": "./roles/克罗瑞娜-绯月.png",
+      "image": "../roles/克罗瑞娜-绯月.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -28,7 +28,7 @@
     },
     {
       "name": "凯西娅-朝翼",
-      "image": "./roles/凯西娅-朝翼.png",
+      "image": "../roles/凯西娅-朝翼.png",
       "position": "输出",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -39,7 +39,7 @@
     },
     {
       "name": "凯西娅-狂诗",
-      "image": "./roles/凯西娅-狂诗.png",
+      "image": "../roles/凯西娅-狂诗.png",
       "position": "输出",
       "damage_attr": "低温",
       "damage_type": "射击",
@@ -50,7 +50,7 @@
     },
     {
       "name": "凯西娅-蓝闪",
-      "image": "./roles/凯西娅-蓝闪.png",
+      "image": "../roles/凯西娅-蓝闪.png",
       "position": "输出",
       "damage_attr": "低温",
       "damage_type": "射击",
@@ -61,7 +61,7 @@
     },
     {
       "name": "卜卜-小天师",
-      "image": "./roles/卜卜-小天师.png",
+      "image": "../roles/卜卜-小天师.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "射击",
@@ -72,7 +72,7 @@
     },
     {
       "name": "卜卜-灵鉴",
-      "image": "./roles/卜卜-灵鉴.png",
+      "image": "../roles/卜卜-灵鉴.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -83,7 +83,7 @@
     },
     {
       "name": "奈利德-冥河代理人",
-      "image": "./roles/奈利德-冥河代理人.png",
+      "image": "../roles/奈利德-冥河代理人.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -94,7 +94,7 @@
     },
     {
       "name": "妮塔-四手",
-      "image": "./roles/妮塔-四手.png",
+      "image": "../roles/妮塔-四手.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -105,7 +105,7 @@
     },
     {
       "name": "妮塔-悸响",
-      "image": "./roles/妮塔-悸响.png",
+      "image": "../roles/妮塔-悸响.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -116,7 +116,7 @@
     },
     {
       "name": "姬辰星-云篆",
-      "image": "./roles/姬辰星-云篆.png",
+      "image": "../roles/姬辰星-云篆.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -127,7 +127,7 @@
     },
     {
       "name": "姬辰星-琼弦",
-      "image": "./roles/姬辰星-琼弦.png",
+      "image": "../roles/姬辰星-琼弦.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -138,7 +138,7 @@
     },
     {
       "name": "姬辰星-观测者",
-      "image": "./roles/姬辰星-观测者.png",
+      "image": "../roles/姬辰星-观测者.png",
       "position": "辅助",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -149,7 +149,7 @@
     },
     {
       "name": "安卡希雅-[不予显示]",
-      "image": "./roles/安卡希雅-[不予显示].png",
+      "image": "../roles/安卡希雅-[不予显示].png",
       "position": "辅助",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -160,7 +160,7 @@
     },
     {
       "name": "安卡希雅-时之重奏",
-      "image": "./roles/安卡希雅-时之重奏.png",
+      "image": "../roles/安卡希雅-时之重奏.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -171,7 +171,7 @@
     },
     {
       "name": "安卡希雅-辉夜",
-      "image": "./roles/安卡希雅-辉夜.png",
+      "image": "../roles/安卡希雅-辉夜.png",
       "position": "辅助",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -182,7 +182,7 @@
     },
     {
       "name": "恩雅-姐姐大人",
-      "image": "./roles/恩雅-姐姐大人.png",
+      "image": "../roles/恩雅-姐姐大人.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -193,7 +193,7 @@
     },
     {
       "name": "恩雅-澜风",
-      "image": "./roles/恩雅-澜风.png",
+      "image": "../roles/恩雅-澜风.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -204,7 +204,7 @@
     },
     {
       "name": "恩雅-羽蜕",
-      "image": "./roles/恩雅-羽蜕.png",
+      "image": "../roles/恩雅-羽蜕.png",
       "position": "辅助",
       "damage_attr": "电击",
       "damage_type": "技能",
@@ -215,7 +215,7 @@
     },
     {
       "name": "晴-旧日王牌",
-      "image": "./roles/晴-旧日王牌.png",
+      "image": "../roles/晴-旧日王牌.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -226,7 +226,7 @@
     },
     {
       "name": "晴-藏锋",
-      "image": "./roles/晴-藏锋.png",
+      "image": "../roles/晴-藏锋.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -237,7 +237,7 @@
     },
     {
       "name": "晴-霆光",
-      "image": "./roles/晴-霆光.png",
+      "image": "../roles/晴-霆光.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -248,7 +248,7 @@
     },
     {
       "name": "猫汐尔-溯影",
-      "image": "./roles/猫汐尔-溯影.png",
+      "image": "../roles/猫汐尔-溯影.png",
       "position": "辅助",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -259,7 +259,7 @@
     },
     {
       "name": "猫汐尔-猫猫",
-      "image": "./roles/猫汐尔-猫猫.png",
+      "image": "../roles/猫汐尔-猫猫.png",
       "position": "辅助",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -270,7 +270,7 @@
     },
     {
       "name": "猫汐尔-莲驱",
-      "image": "./roles/猫汐尔-莲驱.png",
+      "image": "../roles/猫汐尔-莲驱.png",
       "position": "输出",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -281,7 +281,7 @@
     },
     {
       "name": "琴诺-双面",
-      "image": "./roles/琴诺-双面.png",
+      "image": "../roles/琴诺-双面.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -292,7 +292,7 @@
     },
     {
       "name": "琴诺-悖谬",
-      "image": "./roles/琴诺-悖谬.png",
+      "image": "../roles/琴诺-悖谬.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -303,7 +303,7 @@
     },
     {
       "name": "瑟瑞斯-小金鱼",
-      "image": "./roles/瑟瑞斯-小金鱼.png",
+      "image": "../roles/瑟瑞斯-小金鱼.png",
       "position": "辅助",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -314,7 +314,7 @@
     },
     {
       "name": "瑟瑞斯-悠游",
-      "image": "./roles/瑟瑞斯-悠游.png",
+      "image": "../roles/瑟瑞斯-悠游.png",
       "position": "辅助",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -325,7 +325,7 @@
     },
     {
       "name": "瑟瑞斯-瞬刻",
-      "image": "./roles/瑟瑞斯-瞬刻.png",
+      "image": "../roles/瑟瑞斯-瞬刻.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -336,7 +336,7 @@
     },
     {
       "name": "米娅-星彩",
-      "image": "./roles/米娅-星彩.png",
+      "image": "../roles/米娅-星彩.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -347,7 +347,7 @@
     },
     {
       "name": "肴-养生专家",
-      "image": "./roles/肴-养生专家.png",
+      "image": "../roles/肴-养生专家.png",
       "position": "辅助",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -358,7 +358,7 @@
     },
     {
       "name": "肴-冬至",
-      "image": "./roles/肴-冬至.png",
+      "image": "../roles/肴-冬至.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "射击",
@@ -369,7 +369,7 @@
     },
     {
       "name": "肴-夜天光",
-      "image": "./roles/肴-夜天光.png",
+      "image": "../roles/肴-夜天光.png",
       "position": "辅助",
       "damage_attr": "电击",
       "damage_type": "技能",
@@ -380,7 +380,7 @@
     },
     {
       "name": "胧嫣-瑞狐",
-      "image": "./roles/胧嫣-瑞狐.png",
+      "image": "../roles/胧嫣-瑞狐.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "射击",
@@ -391,7 +391,7 @@
     },
     {
       "name": "芙提雅-小太阳",
-      "image": "./roles/芙提雅-小太阳.png",
+      "image": "../roles/芙提雅-小太阳.png",
       "position": "辅助",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -402,7 +402,7 @@
     },
     {
       "name": "芙提雅-缄默",
-      "image": "./roles/芙提雅-缄默.png",
+      "image": "../roles/芙提雅-缄默.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -413,7 +413,7 @@
     },
     {
       "name": "芙提雅-驰掣",
-      "image": "./roles/芙提雅-驰掣.png",
+      "image": "../roles/芙提雅-驰掣.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "射击",
@@ -424,7 +424,7 @@
     },
     {
       "name": "芬妮-咎冠",
-      "image": "./roles/芬妮-咎冠.png",
+      "image": "../roles/芬妮-咎冠.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -435,7 +435,7 @@
     },
     {
       "name": "芬妮-澄意",
-      "image": "./roles/芬妮-澄意.png",
+      "image": "../roles/芬妮-澄意.png",
       "position": "输出",
       "damage_attr": "高热",
       "damage_type": "技能",
@@ -446,7 +446,7 @@
     },
     {
       "name": "芬妮-辉耀",
-      "image": "./roles/芬妮-辉耀.png",
+      "image": "../roles/芬妮-辉耀.png",
       "position": "辅助",
       "damage_attr": "动能",
       "damage_type": "射击",
@@ -457,7 +457,7 @@
     },
     {
       "name": "芬妮-黄金狮子",
-      "image": "./roles/芬妮-黄金狮子.png",
+      "image": "../roles/芬妮-黄金狮子.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "射击",
@@ -468,7 +468,7 @@
     },
     {
       "name": "苔丝-琦幻",
-      "image": "./roles/苔丝-琦幻.png",
+      "image": "../roles/苔丝-琦幻.png",
       "position": "辅助",
       "damage_attr": "低温",
       "damage_type": "技能",
@@ -479,7 +479,7 @@
     },
     {
       "name": "苔丝-魔术师",
-      "image": "./roles/苔丝-魔术师.png",
+      "image": "../roles/苔丝-魔术师.png",
       "position": "辅助",
       "damage_attr": "电击",
       "damage_type": "射击",
@@ -490,7 +490,7 @@
     },
     {
       "name": "茉莉安-幽潮",
-      "image": "./roles/茉莉安-幽潮.png",
+      "image": "../roles/茉莉安-幽潮.png",
       "position": "辅助",
       "damage_attr": "特异",
       "damage_type": "射击",
@@ -501,7 +501,7 @@
     },
     {
       "name": "茉莉安-绷带小姐",
-      "image": "./roles/茉莉安-绷带小姐.png",
+      "image": "../roles/茉莉安-绷带小姐.png",
       "position": "输出",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -512,7 +512,7 @@
     },
     {
       "name": "茉莉安-雨燕",
-      "image": "./roles/茉莉安-雨燕.png",
+      "image": "../roles/茉莉安-雨燕.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "射击",
@@ -523,7 +523,7 @@
     },
     {
       "name": "茉莉安-霄鹰",
-      "image": "./roles/茉莉安-霄鹰.png",
+      "image": "../roles/茉莉安-霄鹰.png",
       "position": "辅助",
       "damage_attr": "动能",
       "damage_type": "技能",
@@ -534,7 +534,7 @@
     },
     {
       "name": "薇蒂雅-天鹅座",
-      "image": "./roles/薇蒂雅-天鹅座.png",
+      "image": "../roles/薇蒂雅-天鹅座.png",
       "position": "辅助",
       "damage_attr": "特异",
       "damage_type": "技能",
@@ -545,7 +545,7 @@
     },
     {
       "name": "薇蒂雅-龙舌兰",
-      "image": "./roles/薇蒂雅-龙舌兰.png",
+      "image": "../roles/薇蒂雅-龙舌兰.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "技能",
@@ -556,7 +556,7 @@
     },
     {
       "name": "里芙-无限之视",
-      "image": "./roles/里芙-无限之视.png",
+      "image": "../roles/里芙-无限之视.png",
       "position": "输出",
       "damage_attr": "动能",
       "damage_type": "射击",
@@ -567,7 +567,7 @@
     },
     {
       "name": "里芙-星期三",
-      "image": "./roles/里芙-星期三.png",
+      "image": "../roles/里芙-星期三.png",
       "position": "输出",
       "damage_attr": "电击",
       "damage_type": "技能",
@@ -578,7 +578,7 @@
     },
     {
       "name": "里芙-狂猎",
-      "image": "./roles/里芙-狂猎.png",
+      "image": "../roles/里芙-狂猎.png",
       "position": "输出",
       "damage_attr": "低温",
       "damage_type": "技能",
