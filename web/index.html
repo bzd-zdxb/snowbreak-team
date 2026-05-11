@@ -547,9 +547,41 @@
       }
     }
 
+    async function fetchWithTimeout(url, ms = 8000) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), ms);
+      try {
+        const res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+        if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+        return res;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function fetchRolesJson() {
+      const sources = [
+        './roles.json',
+        'https://bzd-zdxb.github.io/snowbreak-team/web/roles.json',
+        'https://cdn.jsdelivr.net/gh/bzd-zdxb/snowbreak-team@main/web/roles.json',
+      ];
+
+      let lastErr = null;
+      for (const url of sources) {
+        for (let i = 0; i < 3; i++) {
+          try {
+            const res = await fetchWithTimeout(url, 8000);
+            return await res.json();
+          } catch (err) {
+            lastErr = err;
+          }
+        }
+      }
+      throw lastErr || new Error('roles.json load failed');
+    }
+
     async function bootstrap() {
-      const res = await fetch('./roles.json', { cache: 'no-store' });
-      const data = await res.json();
+      const data = await fetchRolesJson();
       state.roles = data.roles || [];
       document.getElementById('meta').textContent = `角色数: ${state.roles.length} | 数据源: roles.json`;
       renderRoles();
