@@ -1,0 +1,576 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配队推荐 Web Demo</title>
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --panel: #ffffff;
+      --border: #d9e0ea;
+      --text: #1f2937;
+      --sub: #5b6472;
+      --primary: #1f6feb;
+      --primary-hover: #2c79ee;
+      --secondary: #e9edf5;
+      --secondary-hover: #dde4ef;
+      --selected: #2d7ff9;
+      --manual: #e67e22;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .app { max-width: 1400px; margin: 0 auto; padding: 12px; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .header p { margin: 6px 0 0; color: var(--sub); font-size: 14px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .panel-title { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn.primary { background: var(--primary); color: #fff; }
+    .btn.primary:hover { background: var(--primary-hover); }
+    .btn.secondary { background: var(--secondary); color: var(--text); }
+    .btn.secondary:hover { background: var(--secondary-hover); }
+    .check { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+
+    .role-grid-wrap { max-height: 390px; overflow: auto; }
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+      gap: 8px;
+    }
+    .role-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 6px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.06s ease;
+    }
+    .role-card:hover { transform: translateY(-1px); }
+    .role-card.selected { background: var(--selected); color: #fff; }
+    .role-card.manual { background: var(--manual); color: #fff; }
+    .role-card img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 4px;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .role-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+    }
+
+    .row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+    .output-box {
+      height: 300px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 8px;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+    .team-line { color: #d93025; }
+    @media (max-width: 1050px) {
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>配队推荐 Web Demo</h1>
+      <p id="meta">正在加载数据...</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">操作区</div>
+      <div class="controls">
+        <button class="btn primary" id="btnGenerate">生成推荐配队</button>
+        <button class="btn secondary" id="btnSelectAll">全选</button>
+        <button class="btn secondary" id="btnClear">清空选择</button>
+        <label class="check"><input type="checkbox" id="allowRepeat" checked /> 允许角色重复出现</label>
+        <label class="check"><input type="checkbox" id="survivalPriority" /> 考虑生存优先</label>
+        <label class="check"><input type="checkbox" id="showDetail" checked /> 显示配队详细信息</label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">角色选择区（左键选择，右键辅助转输出）</div>
+      <div class="role-grid-wrap">
+        <div class="role-grid" id="roleGrid"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <div class="panel-title">配队建议</div>
+        <div class="output-box" id="resultBox"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">补角色建议</div>
+        <div class="output-box" id="supplementBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      roles: [],
+      selected: new Set(),
+      forcedOutputs: new Set(),
+      teamLineRowIndexes: [],
+    };
+
+    const TOP_N = 5;
+    const resultBox = document.getElementById('resultBox');
+    const supplementBox = document.getElementById('supplementBox');
+
+    const splitTags = (v) => {
+      if (!v || v === '待填写') return [];
+      return String(v).replace(/[，、|/\\;；]/g, ',').split(',').map(s => s.trim()).filter(Boolean);
+    };
+    const roleByName = (name) => state.roles.find(r => r.name === name);
+    const roleRank = (name) => (roleByName(name)?.rank ?? 0);
+    const roleStar = (name) => (roleByName(name)?.star ?? 0);
+    const hasSurvival = (name) => {
+      const s = new Set(splitTags(roleByName(name)?.special_type));
+      return s.has('治疗') || s.has('护盾');
+    };
+    const isNativeOutput = (name) => {
+      const pos = new Set(splitTags(roleByName(name)?.position));
+      const keys = new Set(['主C','输出','C','C位','main','Main','DPS','dps']);
+      return [...pos].some(t => keys.has(t));
+    };
+    const isOutput = (name) => state.forcedOutputs.has(name) || isNativeOutput(name);
+    const isSupport = (name) => !state.forcedOutputs.has(name) && (() => {
+      const pos = new Set(splitTags(roleByName(name)?.position));
+      const keys = new Set(['辅助','support','Support','增益','减抗','控制']);
+      return [...pos].some(t => keys.has(t));
+    })();
+    const outputHasGeneric = (name) => splitTags(roleByName(name)?.special_type).includes('通用');
+    const supportHasGeneric = (name) => {
+      const s = new Set(splitTags(roleByName(name)?.special_type));
+      return s.has('通用') || s.has('追击') || s.has('减抗');
+    };
+
+    function outputPriorityKey(name) {
+      return [
+        state.forcedOutputs.has(name) ? 0 : 1,
+        outputHasGeneric(name) ? 1 : 0,
+        -roleRank(name),
+        name,
+      ];
+    }
+    function cmpTuple(a, b) {
+      for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        const av = a[i] ?? 0;
+        const bv = b[i] ?? 0;
+        if (av < bv) return -1;
+        if (av > bv) return 1;
+      }
+      return 0;
+    }
+
+    function evaluateSupportMatch(outputName, supportName) {
+      const out = roleByName(outputName) || {};
+      const support = roleByName(supportName) || {};
+      const outputTags = new Set([...splitTags(out.damage_type), ...splitTags(out.special_type), ...splitTags(out.version)]);
+      const supportTags = new Set([...splitTags(support.special_type), ...splitTags(support.version)]);
+      const wildcard = ['通用', '追击', '减抗'];
+      const outW = wildcard.filter(t => outputTags.has(t));
+      const supW = wildcard.filter(t => supportTags.has(t));
+      if (outW.length && supportTags.size) {
+        const m = new Set(outW);
+        return { score: m.size, matched: [...m], outputTags: [...outputTags] };
+      }
+      if (supW.length && outputTags.size) {
+        const m = new Set(supW);
+        return { score: m.size, matched: [...m], outputTags: [...outputTags] };
+      }
+      const matched = [...outputTags].filter(t => supportTags.has(t));
+      return { score: matched.length, matched, outputTags: [...outputTags] };
+    }
+
+    function buildOneTeam(outputName, supportPool, preferSameVersion, forceSameVersion) {
+      const outputVersionTags = new Set(splitTags(roleByName(outputName)?.version));
+      const scored = [];
+      for (const s of supportPool) {
+        const r = evaluateSupportMatch(outputName, s);
+        if (r.score > 0) scored.push([s, r.score, roleRank(s), roleStar(s), r.matched]);
+      }
+
+      const forced = new Set();
+      if (forceSameVersion && outputVersionTags.size) {
+        for (const it of scored) {
+          const sVer = new Set(splitTags(roleByName(it[0])?.version));
+          if ([...sVer].some(v => outputVersionTags.has(v))) forced.add(it[0]);
+        }
+      }
+
+      let best = null;
+      const maxPick = Math.min(2, scored.length);
+      for (let k = 1; k <= maxPick; k++) {
+        const combs = combinations(scored, k);
+        for (const combo of combs) {
+          const names = new Set(combo.map(x => x[0]));
+          if (forceSameVersion && forced.size) {
+            const must = [...forced].sort().slice(0, 2);
+            if (!must.every(x => names.has(x))) continue;
+          }
+
+          const matchTotal = combo.reduce((a, b) => a + b[1], 0);
+          const rankSum = combo.reduce((a, b) => a + b[2], 0);
+          const starSum = roleStar(outputName) + combo.reduce((a, b) => a + b[3], 0);
+          const versionHits = combo.filter(x => x[4].some(t => outputVersionTags.has(t))).length;
+
+          const outSurv = hasSurvival(outputName);
+          const supSurv = combo.filter(x => hasSurvival(x[0])).length;
+          const survivalCount = supSurv + (outSurv ? 1 : 0);
+
+          let survivalScore = 0;
+          if (document.getElementById('survivalPriority').checked) {
+            survivalScore = survivalCount === 1 ? 2 : survivalCount === 0 ? 1 : 0;
+          }
+
+          const key = preferSameVersion
+            ? [survivalScore, versionHits, matchTotal, starSum, rankSum, k]
+            : [survivalScore, matchTotal, starSum, rankSum, k];
+
+          if (!best || cmpTuple(best.key, key) < 0) best = { key, combo, survivalCount };
+
+        }
+      }
+
+      const combo = best ? best.combo : [];
+      const supports = combo.map(x => x[0]).sort((a, b) => (supportHasGeneric(a) ? 1 : 0) - (supportHasGeneric(b) ? 1 : 0));
+      while (supports.length < 2) supports.push('空位');
+      const team = [outputName, ...supports];
+
+      const matchScore = combo.reduce((a, b) => a + b[1], 0);
+      const rankWeightScore = roleRank(outputName) * 0.5 + combo.reduce((a, b) => a + roleRank(b[0]), 0) * 0.25;
+      const score = Math.round((matchScore + rankWeightScore) * 100) / 100;
+
+      return {
+        team,
+        score,
+        matchScore,
+        rankWeightScore: Math.round(rankWeightScore * 100) / 100,
+        teamStar: roleStar(outputName) + combo.reduce((a, b) => a + roleStar(b[0]), 0),
+        combo,
+      };
+    }
+
+    function buildSupportSuggestions(outputNames) {
+      const chosen = [...state.selected];
+      const supportCandidates = state.roles.map(r => r.name).filter(n => isSupport(n) && !state.selected.has(n));
+      const selectedSupports = chosen.filter(n => isSupport(n));
+      if (!outputNames.length) return [];
+
+      const out3 = outputNames.slice(0, 3);
+      const suggestions = [];
+
+      for (const out of out3) {
+        const currentTeam = buildOneTeam(out, selectedSupports.length ? selectedSupports : supportCandidates, false, false);
+        const teamSupports = currentTeam.team.slice(1).filter(x => x !== '空位' && selectedSupports.includes(x));
+        const teamInfos = teamSupports
+          .map(s => ({ s, ...evaluateSupportMatch(out, s) }))
+          .sort((a, b) => cmpTuple([a.score, roleRank(a.s), roleStar(a.s), a.s], [b.score, roleRank(b.s), roleStar(b.s), b.s]));
+
+        const needSurvival = document.getElementById('survivalPriority').checked && !hasSurvival(out) && !teamInfos.some(x => hasSurvival(x.s));
+
+        const scored = supportCandidates
+          .map(s => ({ s, ...evaluateSupportMatch(out, s) }))
+          .filter(x => x.score > 0)
+          .sort((a, b) => cmpTuple(
+            [-(needSurvival && hasSurvival(a.s) ? 1 : 0), -a.score, -roleRank(a.s), -roleStar(a.s), a.s],
+            [-(needSurvival && hasSurvival(b.s) ? 1 : 0), -b.score, -roleRank(b.s), -roleStar(b.s), b.s]
+          ));
+
+        if (!scored.length) continue;
+
+        if (teamInfos.length >= 2) {
+          const best = scored[0];
+          const worst = teamInfos[0];
+          suggestions.push({
+            mode: best.score >= worst.score ? 'replace' : 'supplement',
+            name: best.s,
+            output: out,
+            target: best.score >= worst.score ? worst.s : '空位',
+            matched: best.matched.join('/'),
+          });
+        } else {
+          const missing = 2 - teamInfos.length;
+          for (const cand of scored.slice(0, missing)) {
+            suggestions.push({ mode: 'supplement', name: cand.s, output: out, target: '空位', matched: cand.matched.join('/') });
+          }
+        }
+      }
+
+      const dedup = [];
+      const seen = new Set();
+      for (const s of suggestions) {
+        const k = `${s.mode}|${s.output}|${s.name}|${s.target}`;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        dedup.push(s);
+      }
+      return dedup;
+    }
+
+    function buildSupplementSuggestions(results) {
+      const chosen = [...state.selected];
+      const selectedOutputs = chosen.filter(n => isOutput(n)).sort((a, b) => cmpTuple(outputPriorityKey(a), outputPriorityKey(b)));
+
+      if (selectedOutputs.length < 2) {
+        const outputCandidates = state.roles
+          .map(r => r.name)
+          .filter(n => isNativeOutput(n) && !state.selected.has(n))
+          .sort((a, b) => cmpTuple([-roleRank(a), -roleStar(a), a], [-roleRank(b), -roleStar(b), b]))
+          .slice(0, 2);
+
+        const lines = [];
+        lines.push(outputCandidates.length ? '输出不足，建议补这几个输出角色：' : '没有可补的输出角色。');
+        outputCandidates.forEach((n, i) => lines.push(`${i + 1}. ${n} | rank=${roleRank(n)} | star=${roleStar(n)}`));
+
+        const support = buildSupportSuggestions(selectedOutputs);
+        if (support.length) {
+          lines.push('');
+          lines.push('同时建议补这些高匹配辅助角色：');
+          support.forEach((it, i) => {
+            lines.push(
+              it.mode === 'replace'
+                ? `${i + 1}. 基于当前【${it.output}】的配队，建议用【${it.name}】替换【${it.target}】`
+                : `${i + 1}. 基于当前【${it.output}】的配队，建议补充【${it.name}】`
+            );
+          });
+        }
+        return lines.join('\n');
+      }
+
+      const support = buildSupportSuggestions(selectedOutputs.slice(0, 3));
+      if (!support.length) return '没有可补的辅助角色。';
+      const lines = ['辅助补位建议：'];
+      support.forEach((it, i) => {
+        lines.push(
+          it.mode === 'replace'
+            ? `${i + 1}. 基于当前【${it.output}】的配队，建议用【${it.name}】替换【${it.target}】`
+            : `${i + 1}. 基于当前【${it.output}】的配队，建议补充【${it.name}】`
+        );
+      });
+      return lines.join('\n');
+    }
+
+    function generateTeams() {
+      const chosen = [...state.selected];
+      if (!chosen.length) return alert('请至少选择1个角色');
+
+      const outputs = chosen.filter(n => isOutput(n));
+      if (!outputs.length) {
+        renderResult('你选择的角色里没有识别到输出位（position 需包含 主C/输出/C位 等）。', []);
+        supplementBox.textContent = buildSupplementSuggestions([]);
+        return;
+      }
+
+      outputs.sort((a, b) => cmpTuple(outputPriorityKey(a), outputPriorityKey(b)));
+      const supports = chosen.filter(n => !outputs.includes(n) && isSupport(n));
+
+      let results = [];
+      if (document.getElementById('allowRepeat').checked) {
+        for (const out of outputs.slice(0, TOP_N)) {
+          results.push(buildOneTeam(out, supports, false, false));
+        }
+      } else {
+        const used = new Set();
+        const owner = {};
+        for (const s of supports) {
+          const sVer = new Set(splitTags(roleByName(s)?.version));
+          const matchedOut = outputs.filter(o => splitTags(roleByName(o)?.version).some(v => sVer.has(v)));
+          if (matchedOut.length) {
+            matchedOut.sort((a, b) => cmpTuple([-roleRank(a), a], [-roleRank(b), b]));
+            owner[s] = matchedOut[0];
+          }
+        }
+        for (const out of outputs) {
+          if (used.has(out)) continue;
+          const pool = supports.filter(s => !used.has(s) && s !== out && (!owner[s] || owner[s] === out));
+          const t = buildOneTeam(out, pool, true, true);
+          results.push(t);
+          t.team.filter(x => x !== '空位').forEach(x => used.add(x));
+          if (results.length >= TOP_N) break;
+        }
+      }
+
+      const showDetail = document.getElementById('showDetail').checked;
+      const lines = [];
+      const teamRows = [];
+      results.forEach((r, idx) => {
+        const versionTags = new Set();
+        const outVer = new Set(splitTags(roleByName(r.team[0])?.version));
+        r.combo.forEach(c => c[4].forEach(t => { if (outVer.has(t)) versionTags.add(t); }));
+        const suffix = versionTags.size ? ` (${[...versionTags].join('/')})` : '';
+
+        if (showDetail) {
+          lines.push(`Top ${idx + 1} | 综合得分: ${r.score} (匹配=${r.matchScore} + rank加权=${r.rankWeightScore}) | 队伍总star: ${r.teamStar}`);
+          lines.push(`队伍: ${r.team.join(' / ')}${suffix}`);
+          teamRows.push(lines.length - 1);
+
+          const out = r.team[0];
+          const manual = state.forcedOutputs.has(out) ? ' [手动输出]' : '';
+          const allTags = new Set([...splitTags(roleByName(out)?.position), ...splitTags(roleByName(out)?.damage_attr), ...splitTags(roleByName(out)?.damage_type), ...splitTags(roleByName(out)?.special_type), ...splitTags(roleByName(out)?.version)]);
+          lines.push(`输出: ${out}${manual} (rank=${roleRank(out)})`);
+          lines.push(`输出全部词条: ${[...allTags].join(', ') || '无'}`);
+
+          if (document.getElementById('survivalPriority').checked) {
+            const survCount = (hasSurvival(out) ? 1 : 0) + r.combo.filter(c => hasSurvival(c[0])).length;
+            lines.push(`生存来源数(治疗/护盾): ${survCount}`);
+          }
+
+          r.combo.forEach((c, i) => lines.push(`辅助${i + 1}: ${c[0]} | 匹配词条数=${c[1]} | star=${roleStar(c[0])} | 匹配词条=${c[4].join(', ') || '无'}`));
+          if (r.combo.length === 1) lines.push('辅助2: 空位 | 匹配词条数=0');
+          if (!r.combo.length) {
+            lines.push('辅助1: 空位 | 匹配词条数=0');
+            lines.push('辅助2: 空位 | 匹配词条数=0');
+          }
+          lines.push(`总匹配词条数: ${r.combo.reduce((a, b) => a + b[1], 0)}`);
+          lines.push('-'.repeat(72));
+        } else {
+          lines.push(`Top ${idx + 1} 队伍: ${r.team.join(' / ')}${suffix}`);
+        }
+      });
+
+      renderResult(lines.join('\n'), teamRows);
+      supplementBox.textContent = buildSupplementSuggestions(results);
+    }
+
+    function renderResult(text, teamRows = []) {
+      const lines = text.split('\n');
+      resultBox.innerHTML = '';
+      lines.forEach((line, idx) => {
+        const div = document.createElement('div');
+        div.textContent = line;
+        if (teamRows.includes(idx)) div.className = 'team-line';
+        resultBox.appendChild(div);
+      });
+    }
+
+    function combinations(arr, k) {
+      const out = [];
+      function dfs(i, path) {
+        if (path.length === k) return out.push(path.slice());
+        for (let j = i; j < arr.length; j++) {
+          path.push(arr[j]);
+          dfs(j + 1, path);
+          path.pop();
+        }
+      }
+      dfs(0, []);
+      return out;
+    }
+
+    function renderRoles() {
+      const grid = document.getElementById('roleGrid');
+      grid.innerHTML = '';
+      for (const role of state.roles) {
+        const card = document.createElement('div');
+        card.className = 'role-card';
+        if (state.selected.has(role.name)) card.classList.add('selected');
+        if (state.selected.has(role.name) && state.forcedOutputs.has(role.name)) card.classList.add('manual');
+
+        const img = document.createElement('img');
+        img.src = role.image || '';
+        img.alt = role.name;
+        img.onerror = () => { img.style.visibility = 'hidden'; };
+
+        const name = document.createElement('div');
+        name.className = 'role-name';
+        name.textContent = role.name;
+
+        card.appendChild(img);
+        card.appendChild(name);
+
+        card.addEventListener('click', () => {
+          if (state.selected.has(role.name)) {
+            state.selected.delete(role.name);
+            state.forcedOutputs.delete(role.name);
+          } else {
+            state.selected.add(role.name);
+          }
+          renderRoles();
+        });
+
+        card.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          if (!state.selected.has(role.name)) return alert('请先左键选中该角色，再右键标记为输出。');
+          if (state.forcedOutputs.has(role.name)) return alert('该角色已被右键标记为输出。');
+          if (isNativeOutput(role.name)) return alert('该角色本身就是输出角色，右键不生效。');
+          state.forcedOutputs.add(role.name);
+          renderRoles();
+        });
+
+        grid.appendChild(card);
+      }
+    }
+
+    async function bootstrap() {
+      const res = await fetch('./roles.json', { cache: 'no-store' });
+      const data = await res.json();
+      state.roles = data.roles || [];
+      document.getElementById('meta').textContent = `角色数: ${state.roles.length} | 数据源: roles.json`;
+      renderRoles();
+      renderResult('推荐结果会显示在这里...');
+      supplementBox.textContent = '补角色建议会显示在这里...';
+
+      document.getElementById('btnGenerate').addEventListener('click', generateTeams);
+      document.getElementById('btnSelectAll').addEventListener('click', () => {
+        state.selected = new Set(state.roles.map(r => r.name));
+        state.forcedOutputs.clear();
+        renderRoles();
+        renderResult(`已全选 ${state.selected.size} 名角色。`);
+      });
+      document.getElementById('btnClear').addEventListener('click', () => {
+        state.selected.clear();
+        state.forcedOutputs.clear();
+        renderRoles();
+        renderResult('已清空选择。');
+        supplementBox.textContent = '补角色建议会显示在这里...';
+      });
+    }
+
+    bootstrap().catch(err => {
+      document.getElementById('meta').textContent = `加载失败: ${err.message}`;
+    });
+  </script>
+</body>
+</html>
+
+
+
