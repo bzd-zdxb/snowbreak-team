@@ -2,7 +2,7 @@
 from pathlib import Path
 from openpyxl import load_workbook
 
-BASE = Path(r"C:\Users\zhaod\entertainment\Snow\demo")
+BASE = Path(__file__).resolve().parent.parent   # demo 根目录
 ROLES_DIR = BASE / "roles"
 WEB_DIR = BASE / "web"
 WEB_ROLES_DIR = WEB_DIR / "roles"
