@@ -5,15 +5,13 @@ from openpyxl import load_workbook
 BASE = Path(__file__).resolve().parent.parent   # demo 根目录
 ROLES_DIR = BASE / "roles"
 WEB_DIR = BASE / "web"
-WEB_ROLES_DIR = WEB_DIR / "roles"
-WEB_ROLES_DIR.mkdir(exist_ok=True)
 
 # Copy images into web/roles
 img_exts = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 img_map = {}
 for p in ROLES_DIR.iterdir():
     if p.is_file() and p.suffix.lower() in img_exts:
-        target = WEB_ROLES_DIR / p.name
+        target = ROLES_DIR / p.name
         target.write_bytes(p.read_bytes())
         img_map[p.stem] = f"../roles/{p.name}"
 
